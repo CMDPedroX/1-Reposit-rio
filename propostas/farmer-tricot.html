@@ -1,0 +1,745 @@
+<title>Farmer Tricot</title>
+<meta name="description" content="Proposta de estratégia digital e gestão de tráfego pago para a Farmer Tricot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..700&family=Jost:wght@400;500;600&display=swap">
+<style>
+  /* Layout: full-screen deck, one idea per slide, left-aligned editorial type over a faint knitted (stockinette) field that "knits in" on load. */
+  :root{
+    /* dark-first: vinho + lã crua + mohair rosé */
+    --ground:#1D0A11;
+    --ground-2:#28101A;
+    --surface:#33141F;
+    --wool:#F5E9E5;
+    --muted:#CDB2B8;
+    --faint:#957780;
+    --mohair:#EFA3B8;
+    --mohair-deep:#C66A87;
+    --on-accent:#2A0D17;
+    --line:rgba(239,163,184,.20);
+    --line-soft:rgba(239,163,184,.10);
+    --wash:rgba(239,163,184,.06);
+    --stitch:#EFA3B8;
+    --stitch-alpha:.17;
+    --chrome:rgba(29,10,17,.62);
+
+    --display:"Bodoni Moda","Didot","Bodoni 72",Georgia,"Times New Roman",serif;
+    --sans:"Jost","Futura","Century Gothic","Avenir Next",system-ui,sans-serif;
+
+    color-scheme:dark;
+  }
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){
+      --ground:#F8EEEE;
+      --ground-2:#F1E1E3;
+      --surface:#FBF4F4;
+      --wool:#2A0D17;
+      --muted:#6B4652;
+      --faint:#9A7983;
+      --mohair:#A3305A;
+      --mohair-deep:#7A1E40;
+      --on-accent:#FFF6F7;
+      --line:rgba(163,48,90,.24);
+      --line-soft:rgba(163,48,90,.12);
+      --wash:rgba(163,48,90,.05);
+      --stitch:#A3305A;
+      --stitch-alpha:.12;
+      --chrome:rgba(248,238,238,.72);
+      color-scheme:light;
+    }
+  }
+  :root[data-theme="light"]{
+    --ground:#F8EEEE;
+    --ground-2:#F1E1E3;
+    --surface:#FBF4F4;
+    --wool:#2A0D17;
+    --muted:#6B4652;
+    --faint:#9A7983;
+    --mohair:#A3305A;
+    --mohair-deep:#7A1E40;
+    --on-accent:#FFF6F7;
+    --line:rgba(163,48,90,.24);
+    --line-soft:rgba(163,48,90,.12);
+    --wash:rgba(163,48,90,.05);
+    --stitch:#A3305A;
+    --stitch-alpha:.12;
+    --chrome:rgba(248,238,238,.72);
+    color-scheme:light;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    background:var(--ground);
+    color:var(--wool);
+    font-family:var(--sans);
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+
+  /* ---------- Knitted field ---------- */
+  #field{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(110% 90% at 85% 12%, var(--wash), transparent 60%),
+      linear-gradient(180deg,var(--ground) 0%,var(--ground-2) 100%);
+  }
+  #knit{position:absolute;inset:0;width:100%;height:100%}
+
+  /* ---------- Stage & slides ---------- */
+  #stage{position:relative;z-index:1;height:100%;width:100%}
+  .slide{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;justify-content:center;
+    padding-inline:clamp(20px,6vw,110px);
+    padding-block:clamp(72px,10vh,120px) clamp(96px,12vh,130px);
+    opacity:0;visibility:hidden;transform:translateY(14px);
+    transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1),visibility .7s;
+    overflow-y:auto;overflow-x:hidden;
+  }
+  .slide.active{opacity:1;visibility:visible;transform:none}
+  .slide.leaving{opacity:0;transform:translateY(-14px)}
+  .wrap{width:100%;max-width:1080px;margin:0 auto;min-width:0}
+
+  .eyebrow{
+    font-family:var(--sans);font-weight:500;
+    font-size:clamp(.72rem,1.1vw,.82rem);letter-spacing:.3em;text-transform:uppercase;
+    color:var(--mohair);
+    display:flex;align-items:center;gap:14px;margin-bottom:clamp(20px,3vh,32px);
+  }
+  .eyebrow::before{content:"";width:34px;height:1px;background:linear-gradient(90deg,var(--mohair),transparent);flex:none}
+
+  h1,h2,h3{margin:0;font-family:var(--display);font-weight:500;text-wrap:balance;line-height:1.02}
+  .display{
+    font-size:clamp(3.2rem,11.5vw,8.6rem);font-weight:500;letter-spacing:-.025em;line-height:.92;
+    font-variation-settings:"opsz" 96;
+  }
+  .display i{font-style:italic;font-weight:400;color:var(--mohair)}
+  .heading{font-size:clamp(2.1rem,5.6vw,4.4rem);letter-spacing:-.018em;font-variation-settings:"opsz" 72}
+  .heading i{font-style:italic;font-weight:400;color:var(--mohair)}
+  .lede{
+    font-size:clamp(1.05rem,1.9vw,1.4rem);line-height:1.55;color:var(--muted);
+    max-width:46ch;margin:clamp(18px,3vh,28px) 0 0;
+  }
+  p{margin:0}
+  strong{font-weight:600;color:var(--wool)}
+
+  /* ---------- Reveal steps ---------- */
+  .reveal{opacity:0;transform:translateY(16px);filter:blur(6px);
+    transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1),filter .7s ease}
+  .reveal.show{opacity:1;transform:none;filter:none}
+
+  /* ---------- Cover ---------- */
+  .cover-tag{font-size:clamp(1.05rem,2.1vw,1.45rem);line-height:1.5;color:var(--muted);margin-top:26px;max-width:40ch}
+  .cover-rule{height:1px;width:min(340px,60%);background:linear-gradient(90deg,var(--mohair),transparent);margin:clamp(26px,5vh,42px) 0 0}
+  .hint{display:flex;align-items:center;gap:12px;color:var(--faint);font-size:.88rem;letter-spacing:.04em;margin-top:clamp(26px,5vh,48px)}
+  .hint .key{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 7px;border:1px solid var(--line);border-radius:7px;color:var(--muted);font-size:.82rem}
+  .hint .touch{display:none}
+  @media (pointer:coarse){.hint .key,.hint .desk{display:none}.hint .touch{display:inline}}
+
+  /* ---------- Ponto de partida ---------- */
+  .split{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:clamp(32px,6vw,90px);align-items:center}
+  .split > *{min-width:0}
+  @media (max-width:820px){.split{grid-template-columns:1fr}}
+
+  .tag{
+    position:relative;justify-self:start;width:min(320px,100%);
+    background:var(--surface);border:1px solid var(--line);border-radius:6px 6px 16px 16px;
+    padding:46px 26px 24px;
+    rotate:2.5deg;transform-origin:50% 0;
+    box-shadow:0 30px 60px -30px rgba(0,0,0,.45);
+    transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1),filter .7s ease,rotate .6s cubic-bezier(.2,.7,.2,1);
+  }
+  .tag:hover{rotate:-1deg}
+  .tag::before{ /* furo da etiqueta */
+    content:"";position:absolute;top:16px;left:50%;width:12px;height:12px;margin-left:-6px;
+    border-radius:50%;background:var(--ground);border:1px solid var(--line);
+  }
+  .tag::after{ /* fio */
+    content:"";position:absolute;top:-34px;left:50%;width:1px;height:56px;
+    background:linear-gradient(180deg,transparent,var(--mohair));
+  }
+  .tag-brand{font-family:var(--display);font-size:1.6rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;line-height:1}
+  .tag-place{font-size:.78rem;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-top:8px}
+  .tag-sec{border-top:1px dashed var(--line);margin-top:18px;padding-top:14px;display:flex;flex-direction:column;gap:6px}
+  .tag-k{font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--mohair)}
+  .tag-v{font-size:1rem;line-height:1.45;color:var(--wool)}
+  .tag-ref{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:18px;font-variant-numeric:tabular-nums}
+
+  /* ---------- Reference slide ---------- */
+  .ref-place{font-size:clamp(.8rem,1.2vw,.92rem);letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:14px}
+  .ref-name{font-size:clamp(2.4rem,6.6vw,5.2rem);letter-spacing:-.02em;line-height:.98}
+  .ref-handle{font-size:clamp(.95rem,1.5vw,1.1rem);color:var(--muted);margin-top:12px;letter-spacing:.02em}
+  .ref-metric{display:flex;align-items:baseline;gap:16px;margin-top:clamp(22px,3.5vh,36px);flex-wrap:wrap}
+  .ref-count{font-family:var(--display);font-weight:500;font-size:clamp(2.8rem,8.4vw,5.8rem);color:var(--mohair);letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap}
+  .ref-count .u{font-size:.42em;font-style:italic;font-weight:400;margin-left:.18em;letter-spacing:0}
+  .ref-count-label{color:var(--muted);font-size:clamp(.92rem,1.5vw,1.1rem);max-width:22ch;line-height:1.4}
+  .ref-fact{color:var(--muted);font-size:clamp(1rem,1.6vw,1.2rem);line-height:1.55;max-width:56ch;margin-top:clamp(16px,2.6vh,24px)}
+  .local{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);color:var(--mohair);font-size:.78rem;letter-spacing:.16em;text-transform:uppercase}
+  .local::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--mohair)}
+  .linkrow{display:flex;flex-wrap:wrap;gap:12px;margin-top:clamp(24px,4vh,40px)}
+
+  a.pill{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:12px 20px;border-radius:999px;
+    border:1px solid var(--line);background:var(--wash);
+    color:var(--wool);text-decoration:none;font-weight:500;font-size:clamp(.92rem,1.4vw,1.04rem);
+    transition:background .3s ease,border-color .3s ease,transform .3s ease,color .3s ease;
+  }
+  a.pill:hover{background:var(--mohair);border-color:var(--mohair);color:var(--on-accent);transform:translateY(-2px)}
+  a.pill:focus-visible{outline:2px solid var(--mohair);outline-offset:3px}
+  a.pill .ico{width:17px;height:17px;flex:none;display:block}
+  .adnote{color:var(--faint);font-size:.82rem;letter-spacing:.03em;margin-top:16px}
+
+  /* ---------- Investimento ---------- */
+  .zero{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:.9;
+    font-size:clamp(4.6rem,18vw,13rem);
+    background:linear-gradient(180deg,var(--mohair),var(--mohair-deep));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .zero-sub{font-family:var(--display);font-style:italic;font-size:clamp(1.3rem,3.2vw,2.3rem);color:var(--mohair);margin-top:.1em}
+  .paytext{max-width:62ch;font-size:clamp(1rem,1.6vw,1.25rem);line-height:1.62;color:var(--muted);margin-top:clamp(20px,3.2vh,32px)}
+  .paytext + .paytext{margin-top:18px}
+  .payhi{color:var(--mohair);font-weight:600}
+
+  /* ---------- Etapas ---------- */
+  .steplist{display:flex;flex-direction:column;gap:clamp(12px,2vh,18px);margin:clamp(26px,4vh,40px) 0 0;padding:0;list-style:none}
+  .step-item{display:flex;align-items:center;gap:20px}
+  .step-num{
+    flex:none;width:clamp(42px,5vw,56px);height:clamp(42px,5vw,56px);border-radius:50%;
+    border:1px solid var(--line);display:grid;place-items:center;
+    font-family:var(--display);font-size:clamp(1.1rem,2vw,1.45rem);color:var(--mohair);
+    background:var(--wash);font-variant-numeric:tabular-nums;
+  }
+  .step-text{font-size:clamp(1.02rem,1.7vw,1.36rem);line-height:1.35;min-width:0}
+  .step-text small{display:block;color:var(--faint);font-size:.78em;margin-top:2px}
+
+  /* ---------- Perguntas ---------- */
+  .qmark{font-family:var(--display);color:var(--mohair);font-size:clamp(2.6rem,7vw,4.8rem);line-height:.7;margin-bottom:10px}
+  .q{font-size:clamp(1.7rem,4.2vw,3.1rem)}
+  .answer{max-width:60ch;font-size:clamp(1.02rem,1.7vw,1.32rem);line-height:1.6;color:var(--muted);margin-top:clamp(18px,3vh,28px)}
+  .answer + .answer{margin-top:16px}
+  .invest{display:flex;gap:clamp(16px,3vw,36px);flex-wrap:wrap;margin-top:clamp(24px,4vh,36px)}
+  .invest .box{flex:1 1 220px;min-width:0;border:1px solid var(--line);border-radius:14px;padding:22px 24px;background:var(--wash)}
+  .invest .box.ideal{border-color:var(--mohair)}
+  .invest .k{font-size:.76rem;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
+  .invest .v{font-family:var(--display);font-size:clamp(1.9rem,4.2vw,2.8rem);color:var(--mohair);margin-top:8px;font-variant-numeric:tabular-nums}
+  .invest .v span{font-size:.5em;color:var(--muted);font-family:var(--sans)}
+  .invest .n{color:var(--muted);font-size:.92rem;margin-top:6px}
+
+  /* ---------- Dicas ---------- */
+  .tips{display:flex;flex-direction:column;gap:clamp(12px,2vh,18px);margin-top:clamp(24px,4vh,38px);padding:0;list-style:none}
+  .tip{display:flex;align-items:flex-start;gap:16px;font-size:clamp(1.02rem,1.7vw,1.32rem);line-height:1.42}
+  .tip .v{flex:none;width:16px;height:12px;margin-top:.45em;color:var(--mohair)}
+  .tip span{min-width:0}
+
+  /* ---------- Fechamento ---------- */
+  .close-line{font-size:clamp(1.15rem,2.3vw,1.7rem);color:var(--muted);margin-top:clamp(20px,3.5vh,30px);max-width:34ch;line-height:1.45}
+  .close-cta{display:inline-flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-top:clamp(26px,4vh,40px);font-family:var(--display);font-size:clamp(1.3rem,3vw,2.1rem)}
+  .close-cta b{font-weight:600;color:var(--mohair)}
+  .close-cta span{font-style:italic;color:var(--wool)}
+
+  /* ---------- Chrome ---------- */
+  #progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:20;
+    background:linear-gradient(90deg,var(--mohair-deep),var(--mohair));
+    transition:width .6s cubic-bezier(.2,.7,.2,1)}
+  .controls{position:fixed;z-index:20;
+    right:calc(20px + env(safe-area-inset-right,0px));
+    bottom:calc(18px + env(safe-area-inset-bottom,0px));
+    display:flex;align-items:center;gap:14px}
+  .counter{font-variant-numeric:tabular-nums;font-size:.85rem;letter-spacing:.12em;color:var(--faint)}
+  .counter b{color:var(--mohair);font-weight:600}
+  .nav{display:flex;gap:8px}
+  .nav button,#fsbtn{
+    border:1px solid var(--line);background:var(--chrome);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+    color:var(--muted);cursor:pointer;display:grid;place-items:center;
+    transition:color .25s ease,border-color .25s ease,background .25s ease;
+  }
+  .nav button{width:44px;height:44px;border-radius:50%}
+  .nav button:hover:not(:disabled),#fsbtn:hover{border-color:var(--mohair);color:var(--mohair)}
+  .nav button:disabled{opacity:.3;cursor:default}
+  .nav button:focus-visible,#fsbtn:focus-visible{outline:2px solid var(--mohair);outline-offset:2px}
+  .nav svg,#fsbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  #fsbtn{position:fixed;z-index:20;
+    top:calc(16px + env(safe-area-inset-top,0px));
+    right:calc(20px + env(safe-area-inset-right,0px));
+    width:40px;height:40px;border-radius:10px}
+  #topbrand{position:fixed;z-index:20;
+    top:calc(22px + env(safe-area-inset-top,0px));
+    left:calc(24px + env(safe-area-inset-left,0px));
+    font-family:var(--display);font-weight:600;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mohair);
+    opacity:0;transition:opacity .6s ease}
+  #topbrand.on{opacity:.85}
+
+  @media (max-width:640px){
+    .controls{right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));gap:10px}
+    .nav button{width:42px;height:42px}
+    #topbrand{display:none}
+    .tag{rotate:1.5deg}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .slide,.reveal{transition:opacity .25s ease}
+    .slide{transform:none}
+    .reveal{transform:none;filter:none}
+    .tag{transition:opacity .25s ease}
+  }
+</style>
+
+<div id="field" aria-hidden="true"><canvas id="knit"></canvas></div>
+<div id="progress"></div>
+<div id="topbrand">Farmer Tricot</div>
+
+<button id="fsbtn" type="button" aria-label="Tela cheia" title="Tela cheia">
+  <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+</button>
+
+<main id="stage" aria-live="polite">
+
+  <!-- CAPA -->
+  <section class="slide" data-slide>
+    <div class="wrap">
+      <div class="eyebrow">Proposta · Estratégia digital</div>
+      <h1 class="display">Farmer<br><i>Tricot</i></h1>
+      <p class="cover-tag">Uma proposta de gestão de tráfego pago para levar as suas peças de tricô a muito mais clientes, no site, no Instagram e no WhatsApp.</p>
+      <div class="cover-rule"></div>
+      <div class="hint"><span class="key">→</span><span class="desk">Use as setas para avançar</span><span class="touch">Toque ou deslize para avançar</span></div>
+    </div>
+  </section>
+
+  <!-- PONTO DE PARTIDA -->
+  <section class="slide" data-slide>
+    <div class="wrap split">
+      <div>
+        <div class="eyebrow">01 · Ponto de partida</div>
+        <h2 class="heading">Você já tem<br><i>o mais difícil</i></h2>
+        <p class="lede reveal">A Farmer Tricot já tem loja online, marcas de tricô reconhecidas e condições que ajudam a fechar a venda, como parcelamento e desconto no Pix.</p>
+        <p class="lede reveal">O que falta é colocar essas peças na frente de quem compra tricô todos os dias.</p>
+      </div>
+      <aside class="tag reveal" aria-label="Resumo da Farmer Tricot">
+        <div class="tag-brand">Farmer Tricot</div>
+        <div class="tag-place">Araucária · PR</div>
+        <div class="tag-sec">
+          <span class="tag-k">Marcas na loja</span>
+          <span class="tag-v">Biamar · Theodora · Gida · Don Carli</span>
+        </div>
+        <div class="tag-sec">
+          <span class="tag-k">Loja online</span>
+          <span class="tag-v">Parcelamento e desconto no Pix</span>
+        </div>
+        <div class="tag-ref">Ref. proposta · Out/2026</div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- REFERÊNCIAS (abertura) -->
+  <section class="slide" data-slide id="refs-intro">
+    <div class="wrap">
+      <div class="eyebrow">02 · Referências</div>
+      <h2 class="heading">Quem já provou<br><i>o caminho</i></h2>
+      <p class="lede reveal">Marcas de tricô que já atuam no mercado em que você quer crescer e conquistaram relevância, resultados e um posicionamento forte no digital.</p>
+    </div>
+  </section>
+
+  <!-- slides de referência inseridos aqui pelo script -->
+
+  <!-- INVESTIMENTO -->
+  <section class="slide" data-slide>
+    <div class="wrap">
+      <div class="eyebrow">03 · Investimento</div>
+      <h2 class="heading">Quanto eu preciso<br><i>te pagar?</i></h2>
+      <div class="reveal" style="margin-top:clamp(18px,3vh,28px)">
+        <div class="zero">R$&nbsp;0</div>
+        <div class="zero-sub">zero reais</div>
+      </div>
+      <p class="paytext reveal">Eu vou produzir seus criativos, escrever os roteiros para as gravações dos anúncios, deixar seu perfil do Instagram profissional, ajustar a identidade visual da marca e ficar responsável por toda a produção dos anúncios da Farmer Tricot.</p>
+      <p class="paytext reveal">Depois de tudo pronto, eu ainda faço seu tráfego pago de graça e te entrego vendas. <span class="payhi">Você só me paga 1 mês depois, quando tiver resultados expressivos</span> e começar a vender de fato. A gente fixa um valor ou uma porcentagem, e eu sigo entregando aumento de faturamento para a sua empresa.</p>
+    </div>
+  </section>
+
+  <!-- ETAPAS -->
+  <section class="slide" data-slide>
+    <div class="wrap">
+      <div class="eyebrow">04 · O caminho</div>
+      <h2 class="heading">Etapas para<br><i>alcançar o sucesso</i></h2>
+      <ol class="steplist">
+        <li class="step-item reveal"><span class="step-num">1</span><span class="step-text">Ajuste da identidade visual do Instagram</span></li>
+        <li class="step-item reveal"><span class="step-num">2</span><span class="step-text">Montar a oferta para anunciar<small>coleção da vez, condição no Pix e parcelamento</small></span></li>
+        <li class="step-item reveal"><span class="step-num">3</span><span class="step-text">Criar BM e conta de anúncios no gerenciador da Meta</span></li>
+        <li class="step-item reveal"><span class="step-num">4</span><span class="step-text">Instalar o pixel da Meta no site</span></li>
+        <li class="step-item reveal"><span class="step-num">5</span><span class="step-text">Cadastrar a forma de pagamento dos anúncios</span></li>
+        <li class="step-item reveal"><span class="step-num">6</span><span class="step-text">Criação de anúncios levando para o site, o Instagram e o WhatsApp</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- P&R abertura -->
+  <section class="slide" data-slide>
+    <div class="wrap">
+      <div class="eyebrow">05 · Perguntas &amp; respostas</div>
+      <h2 class="heading">Respostas de perguntas<br><i>que você não fez</i></h2>
+    </div>
+  </section>
+
+  <!-- P1 -->
+  <section class="slide" data-slide>
+    <div class="wrap">
+      <div class="eyebrow">05 · Pergunta 01</div>
+      <div class="qmark">“</div>
+      <h3 class="heading q">Como funciona o pagamento dos anúncios?</h3>
+      <p class="answer reveal">Você cadastra um cartão dentro da sua conta no Facebook, e o valor que você gastar em anúncios é cobrado automaticamente no seu cartão.</p>
+      <p class="answer reveal">Você também pode gerar um <strong>QR Code</strong> e adicionar saldo via Pix no valor que quiser usar para anunciar.</p>
+    </div>
+  </section>
+
+  <!-- P2 -->
+  <section class="slide" data-slide>
+    <div class="wrap">
+      <div class="eyebrow">05 · Pergunta 02</div>
+      <div class="qmark">“</div>
+      <h3 class="heading q">Consigo ter um bom resultado sem postar muito no Instagram?</h3>
+      <p class="answer reveal">Até consegue…</p>
+      <p class="answer reveal">Mas a probabilidade de convencer uma pessoa a comprar de você é muito maior se você fizer postagens diárias. Em moda, o Instagram é a vitrine: é ali que a cliente confere as peças, o caimento e a credibilidade da loja antes de comprar.</p>
+    </div>
+  </section>
+
+  <!-- P3 -->
+  <section class="slide" data-slide>
+    <div class="wrap">
+      <div class="eyebrow">05 · Pergunta 03</div>
+      <div class="qmark">“</div>
+      <h3 class="heading q">Quanto preciso investir por dia em anúncios?</h3>
+      <p class="answer reveal">O orçamento mínimo disponível no gerenciador de anúncios é de US$ 1 por dia. Mas, no começo, o ideal é investir um pouco mais para acelerar os resultados.</p>
+      <div class="invest">
+        <div class="box reveal"><div class="k">Mínimo</div><div class="v">R$ 6<span>/dia</span></div><div class="n">o piso do gerenciador</div></div>
+        <div class="box ideal reveal"><div class="k">Ideal no começo</div><div class="v">R$ 20<span>/dia</span></div><div class="n">para ganhar tração</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- P4 -->
+  <section class="slide" data-slide>
+    <div class="wrap">
+      <div class="eyebrow">05 · Pergunta 04</div>
+      <div class="qmark">“</div>
+      <h3 class="heading q">Tricô vende fora do inverno?</h3>
+      <p class="answer reveal">Vende. As referências vendem o ano inteiro: a Natasha Tricot lança coleção de verão, a MM Tricot trabalha com tricô de modal e a Galeria Tricot também vende moda praia e resort.</p>
+      <p class="answer reveal">Peças leves, como vestidos, saias e croppeds em viscolino, entram na vitrine do verão. E novembro e dezembro trazem a <strong>Black Friday</strong> e o <strong>Natal</strong>, duas das datas mais fortes do varejo.</p>
+    </div>
+  </section>
+
+  <!-- DICAS -->
+  <section class="slide" data-slide>
+    <div class="wrap">
+      <div class="eyebrow">06 · Bônus</div>
+      <h2 class="heading">Dicas <i>gratuitas</i></h2>
+      <p class="lede" style="margin-top:14px">que podem ser seguidas (ou não)</p>
+      <ul class="tips">
+        <li class="tip reveal"><svg class="v" viewBox="0 0 16 12" aria-hidden="true"><path d="M1.5 1.5 8 10.5 14.5 1.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Reels com a peça no corpo: caimento, textura e movimento do tricô vendem mais que foto parada.</span></li>
+        <li class="tip reveal"><svg class="v" viewBox="0 0 16 12" aria-hidden="true"><path d="M1.5 1.5 8 10.5 14.5 1.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Bio no formato profissional, com link direto para o site e para o WhatsApp.</span></li>
+        <li class="tip reveal"><svg class="v" viewBox="0 0 16 12" aria-hidden="true"><path d="M1.5 1.5 8 10.5 14.5 1.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Destaques organizados por categoria: vestidos, saias, blusas, conjuntos e marcas.</span></li>
+        <li class="tip reveal"><svg class="v" viewBox="0 0 16 12" aria-hidden="true"><path d="M1.5 1.5 8 10.5 14.5 1.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Deixar o parcelamento e o desconto no Pix visíveis nos posts e nos anúncios.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- FECHAMENTO -->
+  <section class="slide" data-slide>
+    <div class="wrap">
+      <div class="eyebrow">Vamos começar</div>
+      <h1 class="display" style="font-size:clamp(2.9rem,9.5vw,7rem)">Farmer<br><i>Tricot</i></h1>
+      <p class="close-line reveal">Produto e loja online você já tem. Agora é colocar tráfego, e você só paga quando começar a vender.</p>
+      <div class="close-cta reveal"><b>R$ 0</b><span>para começar.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<div class="controls">
+  <div class="counter"><b id="cur">01</b> / <span id="tot">00</span></div>
+  <div class="nav">
+    <button id="prev" type="button" aria-label="Anterior"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button id="next" type="button" aria-label="Próximo"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Referências (edite números e links aqui) ---------- */
+  function adLib(q){
+    return "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&is_targeted_country=false&media_type=all&search_type=keyword_unordered&q=" + encodeURIComponent(q);
+  }
+  var refs = [
+    { name:"MM Tricot", handle:"mariaamarilutricot", place:"Brás · São Paulo",
+      count:385, unit:"mil", label:"seguidores no Instagram",
+      fact:"Fabricação própria, vendas no atacado e no varejo e mais de 16 mil publicações no perfil.",
+      links:[
+        {label:"Site", icon:"globe", url:"https://www.mariaamarilutricot.com.br/"},
+        {label:"Instagram", icon:"ig", url:"https://www.instagram.com/mariaamarilutricot/"},
+        {label:"Anúncios na Meta", icon:"ad", url:adLib("Maria Amarilu Tricot")}
+      ]},
+    { name:"Ademar Malhas Tricot", handle:"ademarmalhastricot", place:"Brás · São Paulo",
+      count:314, unit:"mil", label:"seguidores no Instagram",
+      fact:"Mais de 20 anos no mercado de tricô, venda no atacado e cerca de 14 mil publicações no perfil.",
+      links:[
+        {label:"Loja online", icon:"globe", url:"https://ademarmalhastricot.meloja.com.br/"},
+        {label:"Instagram", icon:"ig", url:"https://www.instagram.com/ademarmalhastricot/"},
+        {label:"Anúncios na Meta", icon:"ad", url:adLib("Ademar Malhas Tricot")}
+      ]},
+    { name:"Natasha Tricot", handle:"natashatricot", place:"Monte Sião · MG",
+      count:208, unit:"mil", label:"seguidores no Instagram",
+      fact:"No mercado desde 1990 em Monte Sião, a capital nacional do tricô. Produção própria, atacado e varejo pelo site.",
+      links:[
+        {label:"Site", icon:"globe", url:"https://www.natashatricot.com.br/"},
+        {label:"Instagram", icon:"ig", url:"https://www.instagram.com/natashatricot/"},
+        {label:"Anúncios na Meta", icon:"ad", url:adLib("Natasha Tricot")}
+      ]},
+    { name:"Galeria Tricot Curitiba", handle:"galeriatricotcwb", place:"ParkShoppingBarigüi · Curitiba",
+      count:1, unit:"mi", label:"de seguidoras no perfil principal da marca, @galeriatricot",
+      fact:"Tricô premium com produção 100% nacional desde 2011. É a referência mais perto de você: loja física em Curitiba, vizinha de Araucária.",
+      local:"Na sua região",
+      links:[
+        {label:"Site", icon:"globe", url:"https://www.galeriatricot.com.br/"},
+        {label:"Instagram", icon:"ig", url:"https://www.instagram.com/galeriatricotcwb/"},
+        {label:"Anúncios na Meta", icon:"ad", url:adLib("Galeria Tricot")}
+      ]}
+  ];
+
+  var ICONS = {
+    globe:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/></svg>',
+    ig:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r="1.1" fill="currentColor" stroke="none"/></svg>',
+    ad:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M4 9v6h3l6 4V5L7 9H4z"/><path d="M17 8a5 5 0 010 8"/></svg>'
+  };
+
+  function pad(n){ return (n < 10 ? "0" : "") + n; }
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+  var stage = document.getElementById("stage");
+  var intro = document.getElementById("refs-intro");
+  var frag = document.createDocumentFragment();
+  refs.forEach(function(r, i){
+    var s = document.createElement("section");
+    s.className = "slide";
+    s.setAttribute("data-slide", "");
+    var links = r.links.map(function(l){
+      return '<a class="pill reveal" href="' + esc(l.url) + '" target="_blank" rel="noopener noreferrer">' +
+             (ICONS[l.icon] || "") + "<span>" + esc(l.label) + "</span></a>";
+    }).join("");
+    var countHtml = r.count >= 10
+      ? '<span class="num" data-count="' + r.count + '">0</span>'
+      : '<span class="num">' + r.count + "</span>";
+    s.innerHTML =
+      '<div class="wrap">' +
+        '<div class="eyebrow">Referências · ' + pad(i + 1) + " / " + pad(refs.length) + "</div>" +
+        '<div class="ref-place">' + esc(r.place) + "</div>" +
+        '<h2 class="ref-name">' + esc(r.name) + "</h2>" +
+        '<div class="ref-handle">@' + esc(r.handle) + "</div>" +
+        (r.local ? '<div class="local">' + esc(r.local) + "</div>" : "") +
+        '<div class="ref-metric reveal">' +
+          '<span class="ref-count">' + countHtml + '<span class="u">' + esc(r.unit) + "</span></span>" +
+          '<span class="ref-count-label">' + esc(r.label) + "</span>" +
+        "</div>" +
+        '<p class="ref-fact reveal">' + esc(r.fact) + "</p>" +
+        '<div class="linkrow">' + links + "</div>" +
+        '<div class="adnote reveal">“Anúncios na Meta” abre a busca da marca na Biblioteca de Anúncios.</div>' +
+      "</div>";
+    frag.appendChild(s);
+  });
+  intro.parentNode.insertBefore(frag, intro.nextSibling);
+
+  /* ---------- Motor de slides ---------- */
+  var slides = Array.prototype.slice.call(stage.querySelectorAll(".slide"));
+  var idx = 0, step = 0;
+  var curEl = document.getElementById("cur");
+  var prevBtn = document.getElementById("prev");
+  var nextBtn = document.getElementById("next");
+  var progress = document.getElementById("progress");
+  var topbrand = document.getElementById("topbrand");
+  document.getElementById("tot").textContent = pad(slides.length);
+
+  function stepsOf(sl){ return sl.querySelectorAll(".reveal").length; }
+
+  function applyReveals(sl, count){
+    var rev = sl.querySelectorAll(".reveal");
+    for (var i = 0; i < rev.length; i++){
+      if (i < count){
+        if (!rev[i].classList.contains("show")){
+          rev[i].classList.add("show");
+          var c = rev[i].querySelector("[data-count]");
+          if (c) countUp(c);
+        }
+      } else {
+        rev[i].classList.remove("show");
+      }
+    }
+  }
+
+  function refresh(){
+    var max = stepsOf(slides[idx]);
+    prevBtn.disabled = (idx === 0 && step === 0);
+    nextBtn.disabled = (idx === slides.length - 1 && step >= max);
+    curEl.textContent = pad(idx + 1);
+    progress.style.width = (idx / (slides.length - 1) * 100) + "%";
+    topbrand.classList.toggle("on", idx > 0);
+  }
+
+  function show(n, fromEnd){
+    n = Math.max(0, Math.min(slides.length - 1, n));
+    var old = slides[idx];
+    if (n !== idx){
+      old.classList.remove("active");
+      old.classList.add("leaving");
+      setTimeout(function(){ old.classList.remove("leaving"); }, 700);
+    }
+    idx = n;
+    var sl = slides[idx];
+    sl.classList.add("active");
+    sl.scrollTop = 0;
+    step = fromEnd ? stepsOf(sl) : 0;
+    applyReveals(sl, step);
+    refresh();
+  }
+
+  function next(){
+    var sl = slides[idx];
+    if (step < stepsOf(sl)){ step++; applyReveals(sl, step); refresh(); }
+    else if (idx < slides.length - 1){ show(idx + 1, false); }
+  }
+  function prev(){
+    if (step > 0){ step--; applyReveals(slides[idx], step); refresh(); }
+    else if (idx > 0){ show(idx - 1, true); }
+  }
+
+  /* ---------- Contador ---------- */
+  function countUp(el){
+    if (el.dataset.done) return;
+    el.dataset.done = "1";
+    var target = parseInt(el.getAttribute("data-count"), 10);
+    if (reduce){ el.textContent = target; return; }
+    var dur = 1100, t0 = null;
+    function frame(t){
+      if (!t0) t0 = t;
+      var p = Math.min((t - t0) / dur, 1);
+      el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------- Entrada ---------- */
+  document.addEventListener("keydown", function(e){
+    if (e.target.closest && e.target.closest("a, button") && (e.key === "Enter" || e.key === " ")) return;
+    if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " " || e.key === "Enter"){ e.preventDefault(); next(); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp" || e.key === "Backspace"){ e.preventDefault(); prev(); }
+    else if (e.key === "Home"){ e.preventDefault(); show(0, false); }
+    else if (e.key === "End"){ e.preventDefault(); show(slides.length - 1, true); }
+  });
+
+  stage.addEventListener("click", function(e){
+    if (e.target.closest("a, button")) return;
+    if (window.getSelection && String(window.getSelection())) return;
+    next();
+  });
+  prevBtn.addEventListener("click", function(e){ e.stopPropagation(); prev(); });
+  nextBtn.addEventListener("click", function(e){ e.stopPropagation(); next(); });
+
+  var tx = 0, ty = 0;
+  stage.addEventListener("touchstart", function(e){ tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY; }, {passive:true});
+  stage.addEventListener("touchend", function(e){
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){ if (dx < 0) next(); else prev(); }
+  }, {passive:true});
+
+  document.getElementById("fsbtn").addEventListener("click", function(e){
+    e.stopPropagation();
+    var d = document;
+    try {
+      var r = !d.fullscreenElement
+        ? (d.documentElement.requestFullscreen && d.documentElement.requestFullscreen())
+        : (d.exitFullscreen && d.exitFullscreen());
+      if (r && r.catch) r.catch(function(){});
+    } catch (err) {}
+  });
+
+  show(0, false);
+
+  /* ---------- Campo de tricô (meia-malha) ---------- */
+  var root = document.documentElement;
+  var cv = document.getElementById("knit");
+  var ctx = cv.getContext("2d");
+  var W = 0, H = 0, dpr = 1, knitAnim = null;
+
+  function size(){
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = cv.width = Math.round(innerWidth * dpr);
+    H = cv.height = Math.round(innerHeight * dpr);
+  }
+
+  function draw(p){ // p: 0..1, carreiras tricotadas de baixo para cima
+    var cs = getComputedStyle(root);
+    var color = cs.getPropertyValue("--stitch").trim() || "#EFA3B8";
+    var base = parseFloat(cs.getPropertyValue("--stitch-alpha")) || 0.15;
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.15 * dpr;
+    ctx.lineCap = "round";
+    var colW = 20 * dpr, rowH = 14 * dpr;
+    var cols = Math.ceil(W / colW) + 1, rows = Math.ceil(H / rowH) + 2;
+    var fx = W * 0.86, fy = H * 0.16, fr = Math.max(W, H) * 0.78;
+    for (var r = 0; r < rows; r++){
+      var fromBottom = (rows - 1 - r) / rows;
+      var rowP = Math.max(0, Math.min(1, (p - fromBottom * 0.85) / 0.15));
+      if (rowP <= 0) continue;
+      var y = r * rowH - rowH;
+      for (var c = 0; c < cols; c++){
+        var x = c * colW;
+        var dx = x - fx, dy = y - fy;
+        var f = 1 - Math.sqrt(dx * dx + dy * dy) / fr;
+        if (f <= 0) continue;
+        ctx.globalAlpha = base * Math.pow(f, 1.4) * rowP;
+        var w = colW * 0.44, h = rowH * 1.25;
+        ctx.beginPath();
+        ctx.moveTo(x - w, y);
+        ctx.quadraticCurveTo(x - w * 0.6, y + h * 0.75, x, y + h);
+        ctx.moveTo(x + w, y);
+        ctx.quadraticCurveTo(x + w * 0.6, y + h * 0.75, x, y + h);
+        ctx.stroke();
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function knitIn(){
+    if (reduce){ draw(1); return; }
+    var t0 = null, dur = 1700;
+    if (knitAnim) cancelAnimationFrame(knitAnim);
+    function frame(t){
+      if (!t0) t0 = t;
+      var p = Math.min((t - t0) / dur, 1);
+      draw(1 - Math.pow(1 - p, 2));
+      knitAnim = p < 1 ? requestAnimationFrame(frame) : null;
+    }
+    knitAnim = requestAnimationFrame(frame);
+  }
+
+  size();
+  knitIn();
+
+  var rt = null;
+  window.addEventListener("resize", function(){
+    clearTimeout(rt);
+    rt = setTimeout(function(){ size(); if (!knitAnim) draw(1); }, 120);
+  });
+  function redraw(){ if (!knitAnim) draw(1); }
+  if (window.matchMedia){
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", redraw);
+    else if (mq.addListener) mq.addListener(redraw);
+  }
+  new MutationObserver(redraw).observe(root, {attributes:true, attributeFilter:["data-theme"]});
+})();
+</script>
